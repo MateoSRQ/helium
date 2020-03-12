@@ -11,3 +11,5 @@ Route.get('api/sede/:id', 'ApiController.sede');
 Route.get('api/packed/sede/:id', 'ApiController.packed_sede');
 Route.get('api/examenes', 'ApiController.examenes');
 Route.get('api/packed/examenes', 'ApiController.packed_examenes');
+
+Route.post('api/registro', 'ApiController.registro');

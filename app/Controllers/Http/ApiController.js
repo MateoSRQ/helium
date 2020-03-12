@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 const _ = require('lodash');
 const jsonpack = require('jsonpack');
+const moment = require('moment');
 const {performance, PerformanceObserver} = require('perf_hooks');
 
 const obs = new PerformanceObserver((list) => {
@@ -265,6 +266,39 @@ class ApiController {
             performance.measure('Inputs validation', 'Checking api/sedes response...', 'Ending api/sedes check');
             console.log(e)
             return response.internalServerError(e)
+        }
+    }
+    async registro({params, request, response, view, auth, session}) {
+        try {
+            let query = request.post();
+            performance.mark('Checking api/registro response...');
+            let object = _.clone(query)
+            let allPruebas = [];
+            object.dtCita = moment(object.dtCita).format('YYYYMMDDhhmmss');
+            object.dtCheckin = moment(object.dtCheckin).format('YYYYMMDDhhmmss');
+            for (let episodio in object.episodios) {
+                let pruebas = [];
+
+                for (let prueba of object.episodios[episodio].pruebas) {
+                    let _prueba = await mongoExamen.findOne({codigo: prueba});
+                    if (_prueba) {
+                        pruebas.push(_prueba);
+                    }
+                }
+                allPruebas = _.uniq(_.concat(allPruebas, pruebas));
+                object.episodios[episodio].pruebas = pruebas;
+            }
+            object.allPruebas = allPruebas;
+            await mongoPaciente.create(object);
+            performance.mark('Ending api/registro check');
+            performance.measure('Inputs validation', 'Checking api/registro response...', 'Ending api/registro check');
+
+            return response.ok(object);
+        } catch (e) {
+            performance.mark('Ending api/sedes check');
+            performance.measure('Inputs validation', 'Checking api/registro response...', 'Ending api/registro check');
+            console.log(e);
+            return responseinternalServerError(e);
         }
     }
 
