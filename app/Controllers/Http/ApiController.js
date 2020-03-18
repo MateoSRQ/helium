@@ -65,6 +65,7 @@ const mongoPaciente = mongoose.model('paciente', {
 });
 const mongoUser = mongoose.model('user', {
     id: Number,
+    nombre: String,
     username: String,
     password: String,
     token: String,
@@ -292,16 +293,144 @@ class ApiController {
             await mongoPaciente.create(object);
             performance.mark('Ending api/registro check');
             performance.measure('Inputs validation', 'Checking api/registro response...', 'Ending api/registro check');
-
             return response.ok(object);
         } catch (e) {
             performance.mark('Ending api/sedes check');
             performance.measure('Inputs validation', 'Checking api/registro response...', 'Ending api/registro check');
             console.log(e);
-            return responseinternalServerError(e);
+            return response.internalServerError(e);
         }
     }
+    async login({params, request, response, view, auth, session}) {
+        let query = request.post();
+        performance.mark('Checking api/login response...');
+        try {
+            if (query.username === 'mateo' && query.password === 'mateo') {
+                performance.mark('Ending api/registro check');
+                performance.measure('Inputs validation', 'Checking api/registro response...', 'Ending api/registro check');
+                return response.ok('');
+            }
+            else {
+                performance.mark('Ending api/sedes check');
+                performance.measure('Inputs validation', 'Checking api/registro response...', 'Ending api/registro check');
+                return response.unauthorized('')
+            }
+        }
+        catch (e) {
+            performance.mark('Ending api/sedes check');
+            performance.measure('Inputs validation', 'Checking api/registro response...', 'Ending api/registro check');
+            console.log(e);
+            return response.internalServerError(e);
+        }
+    }
+    async users({params, request, response, view, auth, session}) {
+        performance.mark('Checking api/users response...');
+        try {
+            let users = await mongoUser.find().lean();
+            performance.mark('Ending api/users check');
+            performance.measure('Inputs validation', 'Checking api/users response...', 'Ending api/users check');
+            return response.ok(users);
+        } catch (e) {
+            performance.mark('Ending api/users check');
+            performance.measure('Inputs validation', 'Checking api/users response...', 'Ending api/users check');
+            console.log(e);
+            return response.internalServerError(e);
+        }
+    }
+    async packed_users({params, request, response, view, auth, session}) {
+        performance.mark('Checking api/users response...');
+        try {
+            let users = await mongoUser.find().lean();
+            performance.mark('Ending api/users check');
+            performance.measure('Inputs validation', 'Checking api/users response...', 'Ending api/users check');
+            users = jsonpack.pack(JSON.parse(JSON.stringify(users)));
+            return response.ok(users);
+        } catch (e) {
+            performance.mark('Ending api/users check');
+            performance.measure('Inputs validation', 'Checking api/users response...', 'Ending api/users check');
+            console.log(e);
+            return response.internalServerError(e);
+        }
+    }
+    async save_user({params, request, response, view, auth, session}) {
+        performance.mark('Checking api/save_user response...');
+        try {
+            let data = request.post();
 
+            console.log(data);
+
+            let model =  new mongoUser(data);
+            await model.save();
+            let user = await mongoUser.findOne({_id: model._id}).lean();
+            performance.mark('Ending api/save_user check');
+            performance.measure('Inputs validation', 'Checking api/save_user response...', 'Ending api/save_user check');
+            return response.ok(user)
+        } catch (e) {
+            performance.mark('Ending api/save_user check');
+            performance.measure('Inputs validation', 'Checking api/save_user response...', 'Ending api/save_user check');
+            console.log(e)
+            return response.internalServerError(e)
+        }
+    }
+    async packed_save_user({params, request, response, view, auth, session}) {
+        performance.mark('Checking api/save_user response...');
+        try {
+            let data = request.post();
+            let model =  new mongoUser(data);
+            await model.save();
+            let user = await mongoUser.findOne({_id: model._id}).lean();
+            performance.mark('Ending api/save_user check');
+            performance.measure('Inputs validation', 'Checking api/save_user response...', 'Ending api/save_user check');
+            user = jsonpack.pack(JSON.parse(JSON.stringify(user)));
+            return response.ok(user)
+        } catch (e) {
+            performance.mark('Ending api/save_user check');
+            performance.measure('Inputs validation', 'Checking api/save_user response...', 'Ending api/save_user check');
+            console.log(e)
+            return response.internalServerError(e)
+        }
+    }
+    async user({params, request, response, view, auth, session}) {
+        performance.mark('Checking api/user response...');
+        try {
+            let _id = params.id;
+            let user = await mongoUser.findOne({_id: mongoose.Types.ObjectId(_id)}).lean();
+            // let nodos = await mongoNodo.find(
+            //     {sede_id: sede.id},
+            //     {_id: 1, codigo: 1, grupo_nodo: 1, estado: 1, id: 1 }
+            // ).lean();
+            // sede.nodos = JSON.parse(JSON.stringify(_.groupBy(nodos, 'grupo_nodo')));
+            performance.mark('Ending api/user check');
+            performance.measure('Inputs validation', 'Checking api/user response...', 'Ending api/user check');
+            return response.ok(user)
+        } catch (e) {
+            performance.mark('Ending api/user check');
+            performance.measure('Inputs validation', 'Checking api/user response...', 'Ending api/user check');
+            console.log(e)
+            return response.internalServerError(e)
+        }
+    }
+    async packed_user({params, request, response, view, auth, session}) {
+        performance.mark('Checking api/user response...');
+        try {
+            let _id = params.id;
+            let user = await mongoUser.findOne({_id: mongoose.Types.ObjectId(_id)}).lean();
+            // let nodos = await mongoNodo.find(
+            //     {sede_id: sede.id},
+            //     {_id: 1, codigo: 1, grupo_nodo: 1, estado: 1, id: 1 }
+            // ).lean();
+            // sede.nodos = JSON.parse(JSON.stringify(_.groupBy(nodos, 'grupo_nodo')));
+            performance.mark('Ending api/user check');
+            performance.measure('Inputs validation', 'Checking api/user response...', 'Ending api/user check');
+            user = jsonpack.pack(JSON.parse(JSON.stringify(user)));
+            return response.ok(user)
+        } catch (e) {
+            performance.mark('Ending api/user check');
+            performance.measure('Inputs validation', 'Checking api/user response...', 'Ending api/user check');
+            console.log(e)
+            return response.internalServerError(e)
+        }
+    }
 }
 
 module.exports = ApiController
