@@ -14,8 +14,12 @@ Route.get('api/examenes', 'ApiController.examenes');
 Route.get('api/packed/examenes', 'ApiController.packed_examenes');
 
 Route.post('api/registro', 'ApiController.registro');
-Route.post('api/login', 'ApiController.login');
+Route.post('api/packed/registro', 'ApiController.packed_registro');
 
+Route.post('api/login', 'ApiController.login');
+Route.post('api/checkin', 'ApiController.checkin');
+
+//Route.get('api/users', 'ApiController.users').middleware(['session']);
 Route.get('api/users', 'ApiController.users');
 Route.get('api/packed/users', 'ApiController.packed_users');
 //Route.post('api/sede', 'ApiController.save_sede');
