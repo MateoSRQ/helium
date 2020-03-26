@@ -5,6 +5,8 @@ const crypto = require('crypto');
 const jsonpack = require('jsonpack');
 const moment = require('moment');
 const nanoid = require('nanoid');
+const faker  = require('faker');
+
 const {performance, PerformanceObserver} = require('perf_hooks');
 
 const obs = new PerformanceObserver((list) => {
@@ -89,6 +91,60 @@ class ApiController {
                 {sede_id: sede.id},
                 {_id: 1, codigo: 1, grupo_nodo: 1, estado: 1, id: 1 }
             ).lean();
+
+            // temporary
+            nodos = nodos.map(nodo => {
+                let estado = faker.random.arrayElement(['No iniciado', 'Esperando', 'Procesando', 'Terminado']);
+                nodo.estado = estado;
+                switch (nodo.estado) {
+                    case 'No iniciado':
+                        nodo.usuario = ' ';
+                        nodo.paciente = ' ';
+                        nodo.esperando = 0;
+                        nodo.atendidos = 0;
+                        nodo.abandono = 0;
+                        nodo.inicio = ' ';
+                        nodo.activo = ' ';
+                        nodo.inactivo = ' ';
+
+                        break;
+                    case 'Esperando':
+                        nodo.usuario = faker.name.firstName() + ' ' + faker.name.lastName();
+                        nodo.paciente = faker.name.firstName() + ' ' + faker.name.lastName();
+                        nodo.esperando = faker.random.number({min: 1, max: 10});
+                        nodo.atendidos = faker.random.number({min: 0, max: 5});
+                        nodo.abandono = faker.random.number({min: 0, max: 3});
+                        nodo.inicio = faker.random.number({min: 8, max: 11}).toString().padStart(2, '00') + ':' + faker.random.number({min: 0, max: 59}).toString().padStart(2, '00');
+                        nodo.activo = faker.random.number({min: 0, max: 4}).toString().padStart(2, '00') + ':' + faker.random.number({min: 0, max: 59}).toString().padStart(2, '00');
+                        nodo.inactivo = faker.random.number({min: 0, max: 4}).toString().padStart(2, '00') + ':' + faker.random.number({min: 0, max: 59}).toString().padStart(2, '00');
+
+                        break;
+                    case 'Procesando':
+                        nodo.usuario = faker.name.firstName() + ' ' + faker.name.lastName();
+                        nodo.paciente = faker.name.firstName() + ' ' + faker.name.lastName();
+                        nodo.esperando = faker.random.number({min: 1, max: 10});
+                        nodo.atendidos = faker.random.number({min: 0, max: 5});
+                        nodo.abandono = faker.random.number({min: 0, max: 3});
+                        nodo.inicio = faker.random.number({min: 8, max: 11}).toString().padStart(2, '00') + ':' + faker.random.number({min: 0, max: 59}).toString().padStart(2, '00');
+                        nodo.activo = faker.random.number({min: 0, max: 4}).toString().padStart(2, '00') + ':' + faker.random.number({min: 0, max: 59}).toString().padStart(2, '00');
+                        nodo.inactivo = faker.random.number({min: 0, max: 4}).toString().padStart(2, '00') + ':' + faker.random.number({min: 0, max: 59}).toString().padStart(2, '00');
+                        break;
+                    case 'Terminado':
+                        nodo.usuario = faker.name.firstName() + ' ' + faker.name.lastName();
+                        nodo.atendidos = faker.random.number({min: 5, max: 10});
+                        nodo.abandono = faker.random.number({min: 0, max: 3});
+                        nodo.paciente = ' ';
+                        nodo.esperando = 0;
+                        nodo.inicio = faker.random.number({min: 8, max: 11}).toString().padStart(2, '00') + ':' + faker.random.number({min: 0, max: 59}).toString().padStart(2, '00');
+                        nodo.activo = faker.random.number({min: 0, max: 4}).toString().padStart(2, '00') + ':' + faker.random.number({min: 0, max: 59}).toString().padStart(2, '00');
+                        nodo.inactivo = faker.random.number({min: 0, max: 4}).toString().padStart(2, '00') + ':' + faker.random.number({min: 0, max: 59}).toString().padStart(2, '00');
+                        break;
+                }
+                return nodo;
+            });
+
+            // end temporary
+
             sede.nodos = JSON.parse(JSON.stringify(_.groupBy(nodos, 'grupo_nodo')));
             performance.mark('Ending api/sedes check');
             performance.measure('Inputs validation', 'Checking api/sedes response...', 'Ending api/sedes check');
