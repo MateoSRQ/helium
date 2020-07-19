@@ -28,7 +28,7 @@
     "@adonisjs/shield": "^1.0.8",
     "faker": "^4.1.0",
     "jsonpack": "^1.1.5",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "moment": "^2.24.0",
     "mongoose": "^5.9.5",
     "nanoid": "^2.1.11",
